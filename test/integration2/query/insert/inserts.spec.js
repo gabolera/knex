@@ -155,7 +155,7 @@ describe('Inserts', function () {
                   return v.toString() === '[object ReturningHelper:id]';
                 },
               ],
-              [{ id: 1 }]
+              [{ id: '1' }]
             );
             tester(
               'mssql',
@@ -309,7 +309,7 @@ describe('Inserts', function () {
                   return v.toString() === '[object ReturningHelper:id]';
                 },
               ],
-              [{ id: 1 }, { id: 2 }]
+              [{ id: '1' }, { id: '2' }]
             );
             tester(
               'mssql',
@@ -527,7 +527,7 @@ describe('Inserts', function () {
                   return v.toString() === '[object ReturningHelper:id]';
                 },
               ],
-              [{ id: 1 }, { id: 2 }]
+              [{ id: '1' }, { id: '2' }]
             );
             tester(
               'mssql',
@@ -753,7 +753,7 @@ describe('Inserts', function () {
                   return v.toString() === '[object ReturningHelper:id]';
                 },
               ],
-              [[{ id: 1 }]]
+              [{ id: '1' }]
             );
             tester(
               'mssql',
@@ -912,7 +912,7 @@ describe('Inserts', function () {
                   return v.toString() === '[object ReturningHelper:id]';
                 },
               ],
-              [{ id: 1 }]
+              [{ id: '1' }]
             );
             tester(
               'mssql',
@@ -979,7 +979,7 @@ describe('Inserts', function () {
                   return v.toString() === '[object ReturningHelper:id]';
                 },
               ],
-              [{ id: 1 }]
+              [{ id: '1' }]
             );
             tester(
               'mssql',
