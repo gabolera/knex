@@ -27,7 +27,20 @@ describe('Oracledb dialect', () => {
             expect(queryObj.bindings.length).to.eql(2);
             expect(queryObj).to.eql({
               sql: 'insert into "table1" ("value") values (:1) returning "value" into :2',
-              bindings: [b, { type: 2019, dir: 3003 }],
+              bindings: [
+                b,
+                {
+                  type: {
+                    _bufferSizeFactor: 112,
+                    _csfrm: 0,
+                    _oraTypeNum: 113,
+                    columnTypeName: 'BLOB',
+                    name: 'DB_TYPE_BLOB',
+                    num: 2019,
+                  },
+                  dir: 3003,
+                },
+              ],
             });
           });
         });
