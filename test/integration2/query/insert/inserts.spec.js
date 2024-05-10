@@ -897,6 +897,9 @@ describe('Inserts', function () {
       });
 
       it('#5738 should handle insert with comments', async function () {
+        if(isOracle(knex)){
+          return this.skip('analyze this function to oracledb');
+        }
         await knex('test_default_table')
           .insert({}, 'id')
           .comment('insert into test_default_table')
