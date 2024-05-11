@@ -197,7 +197,7 @@ describe('Where', function () {
                 ]
               );
               tester(
-                ['pg', 'pgnative', 'pg-redshift', 'oracledb'],
+                ['pg', 'pgnative', 'pg-redshift'],
                 'select * from "accounts" where "id" = ?',
                 [1],
                 [
@@ -222,6 +222,25 @@ describe('Where', function () {
                 [
                   {
                     id: '1',
+                    first_name: 'Test',
+                    last_name: 'User',
+                    email: 'test1@example.com',
+                    logins: 1,
+                    balance: 0,
+                    about: 'Lorem ipsum Dolore labore incididunt enim.',
+                    created_at: TEST_TIMESTAMP,
+                    updated_at: TEST_TIMESTAMP,
+                    phone: null,
+                  },
+                ]
+              );
+              tester(
+                'oracledb',
+                'select * from "accounts" where "id" = ?',
+                [1],
+                [
+                  {
+                    id: 1,
                     first_name: 'Test',
                     last_name: 'User',
                     email: 'test1@example.com',
