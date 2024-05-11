@@ -29,18 +29,23 @@ describe('Joins', function () {
     describe(db, () => {
       let knex;
 
-      before(async () => {
-        knex = logger(getKnexForDb(db));
+      const dropAndRecreateTables = async (knex) => {
         await dropTables(knex);
         await createAccounts(knex);
         await createTestTableTwo(knex);
-
         await insertTestTableTwoData(knex);
+      };
+
+      before(async () => {
+        knex = logger(getKnexForDb(db));
+        await dropAndRecreateTables(knex);
       });
 
       beforeEach(async () => {
+        if (isOracle(knex)) {
+          await dropAndRecreateTables(knex);
+        }
         await knex('accounts').truncate();
-
         await insertAccounts(knex);
       });
 

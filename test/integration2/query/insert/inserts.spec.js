@@ -41,17 +41,17 @@ describe('Inserts', function () {
     describe(db, () => {
       let knex;
 
-      const createTables = async (knex) => {
+      const dropAndRecreateTables = async (knex) => {
         await dropTables(knex);
         await createUsers(knex);
         await createAccounts(knex, true);
         await createTestTableTwo(knex);
         await createDataType(knex);
-      }
+      };
 
       before(async () => {
         knex = logger(getKnexForDb(db));
-        await createTables(knex)
+        await dropAndRecreateTables(knex);
       });
 
       after(async () => {
@@ -60,10 +60,8 @@ describe('Inserts', function () {
       });
 
       beforeEach(async () => {
-        // .truncate() on oracle clear data rows but not sequences that's why
-        //  this tests dosen't work with oracle. let's drop table and recreate
-        if(isOracle(knex)){
-          await createTables(knex)
+        if (isOracle(knex)) {
+          await dropAndRecreateTables(knex);
         }
         await knex('accounts').truncate();
         await knex('test_table_two').truncate();
@@ -897,7 +895,7 @@ describe('Inserts', function () {
       });
 
       it('#5738 should handle insert with comments', async function () {
-        if(isOracle(knex)){
+        if (isOracle(knex)) {
           return this.skip('analyze this function to oracledb');
         }
         await knex('test_default_table')
