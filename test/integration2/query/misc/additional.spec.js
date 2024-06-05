@@ -422,6 +422,9 @@ describe('Additional', function () {
         });
 
         it('should allow using .fn-methods to generate a uuid with select', async function () {
+          if (isOracle(knex)) {
+            return this.skip('oracle does not support uuid');
+          }
           const uuid = await knex.select(knex.raw(knex.fn.uuid() + ' as uuid'));
           expect(uuid[0].uuid).to.match(
             /^[0-9A-F]{8}-[0-9A-F]{4}-[1-5][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i
@@ -429,6 +432,9 @@ describe('Additional', function () {
         });
 
         it('should allow using .fn-methods to be a default value', async function () {
+          if (isOracle(knex)) {
+            return this.skip('oracle does not support uuid');
+          }
           await knex.schema.dropTableIfExists('default_uuid_table');
           await knex.schema.createTable('default_uuid_table', (t) => {
             t.uuid('uuid').defaultTo(knex.fn.uuid());
@@ -441,6 +447,9 @@ describe('Additional', function () {
         });
 
         it('should allow using .fn-methods to convert uuid to binary', function () {
+          if (isOracle(knex)) {
+            return this.skip('oracle does not support uuid');
+          }
           const originalUuid = '6c825dc9-c98f-37ab-b01b-416294811a84';
           const binary = knex.fn.uuidToBin(originalUuid);
           const uuid = knex.fn.binToUuid(binary);
@@ -450,7 +459,10 @@ describe('Additional', function () {
           expect(uuidUnorder).to.equal(originalUuid);
         });
 
-        it('should insert binary uuid and retrieve it with not ordered uuid data', async () => {
+        it('should insert binary uuid and retrieve it with not ordered uuid data', async function () {
+          if (isOracle(knex)) {
+            return this.skip('oracle does not support uuid');
+          }
           await knex.schema.dropTableIfExists('uuid_table');
           await knex.schema.createTable('uuid_table', (t) => {
             t.uuid('uuid_col_binary', { useBinaryUuid: true });
@@ -480,7 +492,10 @@ describe('Additional', function () {
           expect(expectedUuid).to.equal(originalUuid);
         });
 
-        it('should insert binary uuid and retrieve it', async () => {
+        it('should insert binary uuid and retrieve it', async function () {
+          if (isOracle(knex)) {
+            return this.skip('oracle does not support uuid');
+          }
           await knex.schema.dropTableIfExists('uuid_table');
           await knex.schema.createTable('uuid_table', (t) => {
             t.uuid('uuid_col_binary', { useBinaryUuid: true });
