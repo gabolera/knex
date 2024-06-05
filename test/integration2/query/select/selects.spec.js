@@ -45,9 +45,7 @@ describe('Selects', function () {
     describe(db, () => {
       let knex;
 
-      before(async () => {
-        knex = logger(getKnexForDb(db));
-
+      const dropAndRecreateTables = async (knex) => {
         await dropTables(knex);
         await createUsers(knex);
         await createAccounts(knex);
@@ -55,9 +53,17 @@ describe('Selects', function () {
         await createTestTableTwo(knex);
         await createDefaultTable(knex);
         await createDefaultTable(knex, true);
+      };
+
+      before(async () => {
+        knex = logger(getKnexForDb(db));
+        await dropAndRecreateTables(knex);
       });
 
       beforeEach(async () => {
+        if (isOracle(knex)) {
+          await dropAndRecreateTables(knex);
+        }
         await knex('accounts').truncate();
         await insertAccounts(knex);
       });

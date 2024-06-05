@@ -3,7 +3,7 @@
 const { expect } = require('chai');
 
 const { TEST_TIMESTAMP } = require('../../../util/constants');
-const { isPostgreSQL } = require('../../../util/db-helpers');
+const { isPostgreSQL, isOracle } = require('../../../util/db-helpers');
 const {
   getAllDbs,
   getKnexForDb,
@@ -22,10 +22,14 @@ describe('Updates', function () {
       let knex;
       let accountId1;
 
+      const dropAndRecreateTables = async (knex) => {
+                await dropTables(knex);
+        await createAccounts(knex);
+};
+
       before(async () => {
         knex = logger(getKnexForDb(db));
-        await dropTables(knex);
-        await createAccounts(knex);
+        await dropAndRecreateTables(knex);
       });
 
       after(async () => {
@@ -34,6 +38,9 @@ describe('Updates', function () {
       });
 
       beforeEach(async () => {
+if (isOracle(knex)) {
+          await dropAndRecreateTables(knex);
+        }
         await knex('accounts').truncate();
         await insertAccounts(knex);
         const accounts = await knex('accounts').select().where({

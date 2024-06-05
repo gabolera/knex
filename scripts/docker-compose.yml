@@ -126,24 +126,28 @@ services:
       - 'until /usr/local/bin/psql postgres://testuser:knextest@pgnative/knex_test -c "SELECT 1"; do sleep 5; done'
 
   oracledb:
-    image: quillbuilduser/oracle-18-xe
+    image: gvenzl/oracle-xe:21-slim-faststart
     container_name: oracledb_container
     ports:
       - '21521:1521'
     environment:
-      - ORACLE_ALLOW_REMOTE=true
+      - ORACLE_PASSWORD=Oracle21
+      - ORACLE_DATABASE=XE
+      - APP_USER=userdb
+      - APP_USER_PASSWORD=passdb
+    restart: unless-stopped
   waitoracledb:
-    image: quillbuilduser/oracle-18-xe
+    image: gvenzl/oracle-xe:21-slim-faststart
     links:
       - oracledb
     depends_on:
       - oracledb
     environment:
-      - ORACLE_HOME=/opt/oracle/product/18c/dbhomeXE
+      - ORACLE_HOME=/opt/oracle/product/21c/dbhomeXE
     entrypoint:
       - bash
       - -c
-      - 'until /opt/oracle/product/18c/dbhomeXE/bin/sqlplus -s sys/Oracle18@oracledb/XE as sysdba <<< "SELECT 13376411 FROM DUAL; exit;" | grep "13376411"; do echo "Could not connect to oracle... sleep for a while"; sleep 5; done'
+      - 'until /opt/oracle/product/21c/dbhomeXE/bin/sqlplus -s sys/Oracle21@oracledb/XE as sysdba <<< "SELECT 13376411 FROM DUAL; exit;" | grep "13376411"; do echo "Could not connect to oracle... sleep for a while"; sleep 5; done'
 
 volumes:
   mysql_data:

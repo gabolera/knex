@@ -118,6 +118,7 @@ async function dropTables(knex) {
   await knex.schema.dropTableIfExists('test_default_table');
   await knex.schema.dropTableIfExists('test_default_table2');
   await knex.schema.dropTableIfExists('composite_key_test');
+  await knex.schema.dropTableIfExists('test_foreign_table_two');
   await knex.schema.dropTableIfExists('test_table_two');
   await knex.schema.dropTableIfExists('datatype_test');
   await knex.schema.dropTableIfExists('test_default_table');

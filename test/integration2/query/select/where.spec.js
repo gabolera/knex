@@ -39,9 +39,7 @@ describe('Where', function () {
     describe(db, () => {
       let knex;
 
-      before(async () => {
-        knex = logger(getKnexForDb(db));
-
+      const dropAndRecreateTables = async (knex) => {
         await dropTables(knex);
         await createUsers(knex);
         await createAccounts(knex);
@@ -49,9 +47,17 @@ describe('Where', function () {
         await createTestTableTwo(knex);
         await createDefaultTable(knex);
         await createDefaultTable(knex, true);
+      };
+
+      before(async () => {
+        knex = logger(getKnexForDb(db));
+        await dropAndRecreateTables(knex);
       });
 
       beforeEach(async () => {
+        if (isOracle(knex)) {
+          await dropAndRecreateTables(knex);
+        }
         await knex('accounts').truncate();
         await insertAccounts(knex);
       });
@@ -191,7 +197,7 @@ describe('Where', function () {
                 ]
               );
               tester(
-                ['pg', 'pgnative', 'pg-redshift', 'oracledb'],
+                ['pg', 'pgnative', 'pg-redshift'],
                 'select * from "accounts" where "id" = ?',
                 [1],
                 [
@@ -216,6 +222,25 @@ describe('Where', function () {
                 [
                   {
                     id: '1',
+                    first_name: 'Test',
+                    last_name: 'User',
+                    email: 'test1@example.com',
+                    logins: 1,
+                    balance: 0,
+                    about: 'Lorem ipsum Dolore labore incididunt enim.',
+                    created_at: TEST_TIMESTAMP,
+                    updated_at: TEST_TIMESTAMP,
+                    phone: null,
+                  },
+                ]
+              );
+              tester(
+                'oracledb',
+                'select * from "accounts" where "id" = ?',
+                [1],
+                [
+                  {
+                    id: 1,
                     first_name: 'Test',
                     last_name: 'User',
                     email: 'test1@example.com',
@@ -434,6 +459,29 @@ describe('Where', function () {
 
       it('handles multi-column "where in" cases with where', async function () {
         if (!isSQLite(knex) && !isMssql(knex)) {
+          // Reinsert with oracle because dorp tables in beforeEach
+          if (isOracle(knex)) {
+            await knex('composite_key_test').insert([
+              {
+                column_a: 1,
+                column_b: 1,
+                details: 'One, One, One',
+                status: 1,
+              },
+              {
+                column_a: 1,
+                column_b: 2,
+                details: 'One, Two, Zero',
+                status: 0,
+              },
+              {
+                column_a: 2,
+                column_b: 2,
+                details: 'Two, Two, Zero',
+                status: 0,
+              },
+            ]);
+          }
           await knex('composite_key_test')
             .where('status', 1)
             .whereIn(

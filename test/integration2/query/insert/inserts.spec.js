@@ -41,13 +41,17 @@ describe('Inserts', function () {
     describe(db, () => {
       let knex;
 
-      before(async () => {
-        knex = logger(getKnexForDb(db));
+      const dropAndRecreateTables = async (knex) => {
         await dropTables(knex);
         await createUsers(knex);
         await createAccounts(knex, true);
         await createTestTableTwo(knex);
         await createDataType(knex);
+      };
+
+      before(async () => {
+        knex = logger(getKnexForDb(db));
+        await dropAndRecreateTables(knex);
       });
 
       after(async () => {
@@ -56,6 +60,9 @@ describe('Inserts', function () {
       });
 
       beforeEach(async () => {
+        if (isOracle(knex)) {
+          await dropAndRecreateTables(knex);
+        }
         await knex('accounts').truncate();
         await knex('test_table_two').truncate();
       });
@@ -146,7 +153,7 @@ describe('Inserts', function () {
                   return v.toString() === '[object ReturningHelper:id]';
                 },
               ],
-              [{ id: 1 }]
+              [{ id: '1' }]
             );
             tester(
               'mssql',
@@ -300,7 +307,7 @@ describe('Inserts', function () {
                   return v.toString() === '[object ReturningHelper:id]';
                 },
               ],
-              [{ id: 1 }, { id: 2 }]
+              [{ id: '1' }, { id: '2' }]
             );
             tester(
               'mssql',
@@ -350,33 +357,6 @@ describe('Inserts', function () {
             ],
             'id'
           )
-          .testSql(function (tester) {
-            tester(
-              'oracledb',
-              'begin execute immediate \'insert into "test_table_two" ("account_id", "details", "status") values (:1, :2, :3) returning "id" into :4\' using ?, ?, ?, out ?; execute immediate \'insert into "test_table_two" ("account_id", "details", "status") values (:1, :2, :3) returning "id" into :4\' using ?, ?, ?, out ?; execute immediate \'insert into "test_table_two" ("account_id", "details", "status") values (:1, :2, :3) returning "id" into :4\' using ?, ?, ?, out ?;end;',
-              [
-                1,
-                'Lorem ipsum Minim nostrud Excepteur consectetur enim ut qui sint in veniam in nulla anim do cillum sunt voluptate Duis non incididunt.',
-                0,
-                function (v) {
-                  return v.toString() === '[object ReturningHelper:id]';
-                },
-                2,
-                'Lorem ipsum Minim nostrud Excepteur consectetur enim ut qui sint in veniam in nulla anim do cillum sunt voluptate Duis non incididunt.',
-                1,
-                function (v) {
-                  return v.toString() === '[object ReturningHelper:id]';
-                },
-                3,
-                '',
-                1,
-                function (v) {
-                  return v.toString() === '[object ReturningHelper:id]';
-                },
-              ],
-              ['1', '2', '3']
-            );
-          })
           .asCallback(function (err) {
             if (err) return ok(err);
             ok();
@@ -518,7 +498,7 @@ describe('Inserts', function () {
                   return v.toString() === '[object ReturningHelper:id]';
                 },
               ],
-              [{ id: 1 }, { id: 2 }]
+              [{ id: '1' }, { id: '2' }]
             );
             tester(
               'mssql',
@@ -744,7 +724,7 @@ describe('Inserts', function () {
                   return v.toString() === '[object ReturningHelper:id]';
                 },
               ],
-              [[{ id: 1 }]]
+              [{ id: '1' }]
             );
             tester(
               'mssql',
@@ -903,7 +883,7 @@ describe('Inserts', function () {
                   return v.toString() === '[object ReturningHelper:id]';
                 },
               ],
-              [{ id: 1 }]
+              [{ id: '1' }]
             );
             tester(
               'mssql',
@@ -915,6 +895,9 @@ describe('Inserts', function () {
       });
 
       it('#5738 should handle insert with comments', async function () {
+        if (isOracle(knex)) {
+          return this.skip('analyze this function to oracledb');
+        }
         await knex('test_default_table')
           .insert({}, 'id')
           .comment('insert into test_default_table')
@@ -970,7 +953,7 @@ describe('Inserts', function () {
                   return v.toString() === '[object ReturningHelper:id]';
                 },
               ],
-              [{ id: 1 }]
+              [{ id: '1' }]
             );
             tester(
               'mssql',

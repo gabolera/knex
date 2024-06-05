@@ -71,7 +71,7 @@ describe('Checks', () => {
             tester(
               ['oracledb'],
               [
-                'create table "check_test" ("name" varchar2(255) check ("name" LIKE \'%val%\'))',
+                'create table "check_test" ("col1" varchar2(255), "col2" varchar2(255), check ("col1" = "col2"))',
               ]
             );
             tester('mysql', [
