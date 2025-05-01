@@ -61,15 +61,13 @@ function do_install () {
     sleep 15
     printf "\nInstalling oracle client libs to db container ...\n"
     set -x
-    docker compose -f "$docker_compose_file" exec -T oracledb curl http://yum.oracle.com/public-yum-ol7.repo -o /etc/yum.repos.d/public-yum-ol7.repo
-    docker compose -f "$docker_compose_file" exec -T oracledb yum install -y yum-utils
-    docker compose -f "$docker_compose_file" exec -T oracledb yum-config-manager --enable ol7_oracle_instantclient
-    docker compose -f "$docker_compose_file" exec -T oracledb yum install -y oracle-instantclient18.3-basiclite
+    docker compose -f "$docker_compose_file" exec -T oracledb sudo microdnf install oracle-release-el8 -y
+    docker compose -f "$docker_compose_file" exec -T oracledb sudo microdnf install oracle-instantclient19.26-basiclite -y
     set +x
     printf "\nCopying to host's ~/lib directory and adding to ldconfig ...\n"
     if [ "$do_changes" = "true" ]; then
         set -x
-        docker cp oracledb_container:/usr/lib/oracle/18.3/client64/lib/ ~/
+        docker cp oracledb_container:/usr/lib/oracle/19.26/client64/lib/ ~/
         sudo sh -c "echo $HOME/lib > /etc/ld.so.conf.d/oracle-instantclient.conf"
         sudo ldconfig
         set +x
