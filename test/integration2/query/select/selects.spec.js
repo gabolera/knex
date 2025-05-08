@@ -463,7 +463,7 @@ describe('Selects', function () {
         }
 
         let count = 0;
-        const stream = knex('accounts').stream();
+        const stream = knex('accounts').stream({});
         stream.on('data', function () {
           count++;
           if (count === 6) done();

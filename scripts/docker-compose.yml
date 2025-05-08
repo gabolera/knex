@@ -23,7 +23,7 @@ services:
       - 'until /opt/mssql-tools/bin/sqlcmd -S mssql -U sa -P S0meVeryHardPassword -d master -Q "CREATE DATABASE knex_test; ALTER DATABASE knex_test SET ALLOW_SNAPSHOT_ISOLATION ON; ALTER DATABASE knex_test SET DELAYED_DURABILITY = FORCED"; do sleep 5; done'
 
   mysql:
-    image: mysql
+    image: mysql:8.0.40
     # https://dev.mysql.com/doc/refman/8.0/en/mysql-acid.html
     # https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_flush_method
     # nosync only for unix, edit for local start on other systems
@@ -53,7 +53,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
   waitmysql:
-    image: mysql
+    image: mysql:8.0.40
     links:
       - mysql
     depends_on:
@@ -126,28 +126,28 @@ services:
       - 'until /usr/local/bin/psql postgres://testuser:knextest@pgnative/knex_test -c "SELECT 1"; do sleep 5; done'
 
   oracledb:
-    image: gvenzl/oracle-xe:21-slim-faststart
+    image: gvenzl/oracle-free:23-slim-faststart
     container_name: oracledb_container
     ports:
       - '21521:1521'
     environment:
-      - ORACLE_PASSWORD=Oracle21
-      - ORACLE_DATABASE=XE
+      - ORACLE_PASSWORD=Oracle23
+      - ORACLE_DATABASE=free
       - APP_USER=userdb
       - APP_USER_PASSWORD=passdb
     restart: unless-stopped
   waitoracledb:
-    image: gvenzl/oracle-xe:21-slim-faststart
+    image: gvenzl/oracle-free:23-slim-faststart
     links:
       - oracledb
     depends_on:
       - oracledb
     environment:
-      - ORACLE_HOME=/opt/oracle/product/21c/dbhomeXE
+      - ORACLE_HOME=/opt/oracle/product/23ai/dbhomeFree
     entrypoint:
       - bash
       - -c
-      - 'until /opt/oracle/product/21c/dbhomeXE/bin/sqlplus -s sys/Oracle21@oracledb/XE as sysdba <<< "SELECT 13376411 FROM DUAL; exit;" | grep "13376411"; do echo "Could not connect to oracle... sleep for a while"; sleep 5; done'
+      - 'until /opt/oracle/product/23ai/dbhomeFree/bin/sqlplus -s sys/Oracle23@oracledb/free as sysdba <<< "SELECT 13376411 FROM DUAL; exit;" | grep "13376411"; do echo "Could not connect to oracle... sleep for a while"; sleep 5; done'
 
 volumes:
   mysql_data:

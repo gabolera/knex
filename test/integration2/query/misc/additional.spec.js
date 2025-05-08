@@ -124,7 +124,7 @@ describe('Additional', function () {
         });
 
         it('should emit error events when a stream query fails', (done) => {
-          const stream = knex('wrongtable').limit(1).stream();
+          const stream = knex('wrongtable').limit(1).stream({});
           stream.on('error', () => {
             done();
           });
@@ -133,7 +133,7 @@ describe('Additional', function () {
         it('should release the connection when a stream query iteration errors', async function () {
           const spy = sinon.spy(knex.client, 'releaseConnection');
 
-          const stream = knex.raw('VALUES (1), (2), (3)').stream();
+          const stream = knex.raw('VALUES (1), (2), (3)').stream({});
           try {
             // eslint-disable-next-line no-unused-vars
             for await (const _ of stream) {
@@ -173,7 +173,7 @@ describe('Additional', function () {
           await insertAccounts(knex, 'accounts');
           let response;
           let count = 0;
-          const stream = knex('accounts').limit(1).stream();
+          const stream = knex('accounts').limit(1).stream({});
           // Need to promise the stream to await it
           await new Promise((done) => {
             stream.on('data', (res) => {
@@ -194,7 +194,7 @@ describe('Additional', function () {
           const stream = knex('accounts')
             .queryContext('the context')
             .limit(1)
-            .stream();
+            .stream({});
 
           stream.on('data', (res) => {
             response = res;
@@ -206,7 +206,7 @@ describe('Additional', function () {
         });
 
         it('should process response for each row done through a stream', (done) => {
-          const stream = knex('accounts').limit(5).stream();
+          const stream = knex('accounts').limit(5).stream({});
           let count = 0;
           stream.on('data', () => count++);
           stream.on('finish', () => {
