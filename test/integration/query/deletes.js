@@ -2,11 +2,21 @@
 
 const { expect } = require('chai');
 const { TEST_TIMESTAMP } = require('../../util/constants');
-const { isSQLite, isOracle, isCockroachDB } = require('../../util/db-helpers');
-const { isPostgreSQL } = require('../../util/db-helpers.js');
+const { isSQLite, isOracle, isCockroachDB, isPostgreSQL } = require('../../util/db-helpers');
+const { dropTables, createAccounts, createTestTableTwo } = require('../../util/tableCreatorHelper');
+const { insertAccounts, insertTestTableTwoData } = require('../../util/dataInsertHelper');
 
 module.exports = function (knex) {
   describe('Deletes', function () {
+    before(async () => {
+      await dropTables(knex);
+      await createAccounts(knex);
+      await createTestTableTwo(knex);
+      
+      await insertAccounts(knex);
+      await insertTestTableTwoData(knex);
+    });
+
     it('should handle deletes', function () {
       return knex('accounts')
         .where('id', 1)

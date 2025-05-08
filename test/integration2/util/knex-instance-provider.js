@@ -190,8 +190,8 @@ const testConfigs = {
     client: 'oracledb',
     connection: testConfig.oracledb || {
       user: 'system',
-      password: 'Oracle18',
-      connectString: 'localhost:21521/XE',
+      password: 'Oracle23',
+      connectString: 'localhost:21521/free',
       // https://github.com/oracle/node-oracledb/issues/525
       stmtCacheSize: 0,
     },
